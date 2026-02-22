@@ -18,6 +18,8 @@ let query = '';
 let page = 1;
 let totalHits = 0;
 
+let endMessageShown = false;
+
 hideLoadMoreButton();
 
 formEl.addEventListener('submit', onSearch);
@@ -38,6 +40,7 @@ async function onSearch(event) {
 
   page = 1;
   totalHits = 0;
+  endMessageShown = false;
 
   clearGallery();
   hideLoadMoreButton();
@@ -76,7 +79,9 @@ async function onSearch(event) {
 }
 
 async function onLoadMore() {
+  hideLoadMoreButton();
   loadMoreBtn.disabled = true;
+
   page += 1;
   showLoader();
 
@@ -102,14 +107,14 @@ function updateLoadMoreVisibility() {
   const loaded = page * PER_PAGE;
 
   if (loaded >= totalHits) {
-    const wasVisible = !loadMoreBtn.classList.contains('is-hidden');
     hideLoadMoreButton();
 
-    if (wasVisible) {
+    if (!endMessageShown) {
       iziToast.info({
         message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
       });
+      endMessageShown = true;
     }
     return;
   }
